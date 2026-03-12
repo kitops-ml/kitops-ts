@@ -1,0 +1,55 @@
+{
+  "name": "kitops-ts",
+  "version": "0.0.1",
+  "description": "TypeScript library for KitOps CLI",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "pnpm build"
+  },
+  "keywords": [
+    "kitops",
+    "modelkit",
+    "ml",
+    "ai",
+    "packaging",
+    "typescript"
+  ],
+  "author": "Jozu",
+  "license": "Apache-2.0",
+  "homepage": "https://kitops.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kitops-ml/kitops-ts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kitops-ml/kitops-ts/issues"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.8",
+    "@vitest/ui": "^4.0.17",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.17"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "yaml": "^2.8.2"
+  }
+}
