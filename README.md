@@ -6,7 +6,7 @@ Similar to [pykitops](https://github.com/jozu-ai/kitops/tree/main/pykitops) but 
 
 ## Requirements
 
-- Node.js >= 18
+- Node.js >= 23
 - [KitOps CLI](https://kitops.org/docs/installation) installed and available in `PATH`
   (or set `KITOPS_CLI_PATH` to the full path of the binary)
 

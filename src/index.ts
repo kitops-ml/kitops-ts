@@ -6,7 +6,7 @@
  * or CI pipelines without having to shell out manually.
  *
  * Requirements:
- *   - Node.js 18+
+ *   - Node.js 23+
  *   - The `kit` CLI must be installed and reachable on PATH, or set the
  *     KITOPS_CLI_PATH environment variable to the full path of the binary.
  *
