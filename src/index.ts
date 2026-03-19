@@ -81,5 +81,6 @@ export type {
   InitFlags,
   InitResult,
   InspectResult,
+  TLSFlags,
   VersionResult
  } from './types/commands.js';
