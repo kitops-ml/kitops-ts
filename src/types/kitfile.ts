@@ -17,7 +17,7 @@ interface LayerInfo {
   diffId?: string;
 }
 
-interface ModelPart {
+export interface ModelPart {
   path?: string,
   type?: string,
   license?: string;
