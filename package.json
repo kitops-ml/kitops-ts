@@ -1,5 +1,5 @@
 {
-  "name": "kitops-ts",
+  "name": "@kitops/kitops-ts",
   "version": "0.0.1",
   "description": "TypeScript library for KitOps CLI",
   "type": "module",
@@ -19,8 +19,7 @@
     "dev": "tsc --watch",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "typecheck": "tsc --noEmit",
-    "prepublishOnly": "pnpm build"
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [
     "kitops",

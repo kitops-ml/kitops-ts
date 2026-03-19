@@ -16,10 +16,10 @@ jobs:
         with:
           run_install: false
 
-      - name: Use Node.js LTS
+      - name: Use Node.js 23
         uses: actions/setup-node@v6
         with:
-          node-version: lts/*
+          node-version: 23
           cache: pnpm
           registry-url: https://registry.npmjs.org
 
@@ -29,13 +29,10 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
-      - name: Build
-        run: pnpm build
-
       - name: Test
         run: pnpm test
 
       - name: Publish
-        run: pnpm publish --no-git-checks
+        run: pnpm publish --no-git-checks --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
