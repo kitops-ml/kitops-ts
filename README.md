@@ -1,8 +1,12 @@
 # kitops-ts
 
+[![npm version](https://img.shields.io/npm/v/@kitops/kitops-ts)](https://www.npmjs.com/package/@kitops/kitops-ts)
+[![CI](https://github.com/kitops-ml/kitops-ts/actions/workflows/ci.yml/badge.svg)](https://github.com/kitops-ml/kitops-ts/actions/workflows/ci.yml)
+[![License](https://img.shields.io/npm/l/@kitops/kitops-ts)](./LICENSE)
+
 TypeScript/Node.js SDK for the [KitOps](https://kitops.org) CLI. Provides a type-safe functional API for packing, pushing, pulling, and inspecting ModelKits — without having to shell out manually.
 
-Similar to [pykitops](https://github.com/jozu-ai/kitops/tree/main/pykitops) but for TypeScript/JavaScript.
+Similar to [pykitops](https://github.com/kitops-ml/pykitops) but for TypeScript/JavaScript.
 
 ## Requirements
 
@@ -13,15 +17,15 @@ Similar to [pykitops](https://github.com/jozu-ai/kitops/tree/main/pykitops) but 
 ## Installation
 
 ```bash
-npm install kitops-ts
+npm install @kitops/kitops-ts
 # or
-pnpm add kitops-ts
+pnpm add @kitops/kitops-ts
 ```
 
 ## Quick start
 
 ```typescript
-import { login, pack, push } from 'kitops-ts';
+import { login, pack, push } from '@kitops/kitops-ts';
 
 await login('registry.example.com', process.env.REGISTRY_USER!, process.env.REGISTRY_PASS!);
 await pack('.', { tag: 'registry.example.com/org/my-model:v1.0.0' });
@@ -234,4 +238,4 @@ pnpm typecheck   # type-check without emitting
 ## Related
 
 - [KitOps](https://kitops.org) — the ModelKit standard and CLI
-- [pykitops](https://github.com/jozu-ai/kitops/tree/main/pykitops) — Python SDK
+- [pykitops](https://github.com/kitops-ml/pykitops) — Python SDK
