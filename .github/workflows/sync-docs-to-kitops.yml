@@ -2,7 +2,14 @@ name: Sync docs to KitOps repository
 
 on:
   workflow_call:
+    secrets:
+      KITOPS_BOT_PRIVATE_KEY:
+        required: true
   workflow_dispatch:
+
+concurrency:
+  group: sync-docs-to-kitops
+  cancel-in-progress: true
 
 env:
   KITOPS_PATH: "kitops-clone"
@@ -19,6 +26,7 @@ jobs:
           app-id: ${{ vars.KITOPS_BOT_ID }}
           private-key: ${{ secrets.KITOPS_BOT_PRIVATE_KEY }}
           owner: kitops-ml
+          repositories: kitops
 
       - name: Checkout kitops-ts repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -36,7 +44,7 @@ jobs:
           # Remove existing directory to ensure any old files are removed
           rm -rf "${KITOPS_PATH}/${KITOPS_TS_DOCS_PATH}"
           mkdir -p "${KITOPS_PATH}/${KITOPS_TS_DOCS_PATH}"
-          cp -r docs/* "${KITOPS_PATH}/${KITOPS_TS_DOCS_PATH}"
+          cp -r docs/. "${KITOPS_PATH}/${KITOPS_TS_DOCS_PATH}"
 
       - name: Get short SHA
         id: get-sha

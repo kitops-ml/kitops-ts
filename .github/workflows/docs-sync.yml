@@ -10,4 +10,5 @@ on:
 jobs:
   sync:
     uses: ./.github/workflows/sync-docs-to-kitops.yml
-    secrets: inherit
+    secrets:
+      KITOPS_BOT_PRIVATE_KEY: ${{ secrets.KITOPS_BOT_PRIVATE_KEY }}
