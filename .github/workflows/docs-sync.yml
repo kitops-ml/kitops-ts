@@ -1,0 +1,13 @@
+name: Sync docs on change
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "docs/**"
+
+jobs:
+  sync:
+    uses: ./.github/workflows/sync-docs-to-kitops.yml
+    secrets: inherit
