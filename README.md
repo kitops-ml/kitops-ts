@@ -11,7 +11,7 @@ Similar to [pykitops](https://github.com/kitops-ml/pykitops) but for TypeScript/
 ## Requirements
 
 - Node.js >= 23
-- [KitOps CLI](https://kitops.org/docs/installation) installed and available in `PATH`
+- [KitOps CLI](https://kitops.org/docs/cli/installation/) installed and available in `PATH`
   (or set `KITOPS_CLI_PATH` to the full path of the binary)
 
 ## Installation
