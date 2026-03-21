@@ -4,7 +4,7 @@
 
 - **Node.js >= 23**
 - **KitOps CLI** installed and available on `PATH`
-  — [Installation instructions](https://kitops.org/docs/cli/installation/)
+  — [Installation instructions](/docs/cli/installation/)
   — Or set the `KITOPS_CLI_PATH` environment variable to the full path of the `kit` binary
 
 ## Installation
