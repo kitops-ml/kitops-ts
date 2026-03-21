@@ -23,7 +23,8 @@ await push('ghcr.io/my-org/my-model:v1.0.0');
 ## Documentation
 
 - [Getting Started](./getting-started.md) — Installation, requirements, and a quick start guide
-- [API Reference](./api-reference.md) — Full documentation for all commands and types
+- [API Reference](./api-reference.md) — Full documentation for all commands
+- [Types](./types.md) — TypeScript type definitions used across the API
 - [Examples](./examples.md) — Annotated walkthroughs of common workflows
 
 ## Related

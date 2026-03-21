@@ -27,7 +27,7 @@ type Layer =
 
 ### `FilterFlag`
 
-A filter expression used by [`unpack`](api-reference.md#unpackrepository-tag-flags) and [`info`](api-reference.md#inforepository-tag-flags) to select specific layers or paths within a layer.
+A filter expression used by [`unpack`](api-reference.md#unpackdestination-flags) and [`info`](api-reference.md#inforepository-tag-flags) to select specific layers or paths within a layer.
 
 ```typescript
 type FilterFlag = string  // see accepted formats below
@@ -70,7 +70,7 @@ type KitCommand =
 
 ### `ExecResult`
 
-Raw output from a spawned `kit` process. Returned by the low-level `exec` helper.
+Raw output from a spawned `kit` process. Returned by the low-level `runCommand` helper.
 
 ```typescript
 type ExecResult = {
@@ -84,7 +84,7 @@ type ExecResult = {
 
 ### `ModelKit`
 
-A single entry returned by [`list`](api-reference.md#listrepository-flags).
+A single entry returned by [`list`](api-reference.md#listrepository).
 
 ```typescript
 type ModelKit = {
@@ -399,7 +399,7 @@ type Kitfile = {
 
 | Property | Type | Description |
 |---|---|---|
-| `manifestVersion` | `string` | Kitfile schema version (currently `'1.0'`). |
+| `manifestVersion` | `string` | Kitfile schema version. See the [KitOps Kitfile spec](https://kitops.org/docs/kitfile/kf-spec.html) for the authoritative value. |
 | `package` | [`Package`](#package) | Package-level metadata. |
 | `model` | [`Model`](#model) | Model artifact definition. |
 | `code` | [`Code[]`](#code) | Source code artifact definitions. |
