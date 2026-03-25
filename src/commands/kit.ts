@@ -8,6 +8,6 @@ import type { KitCommand, ExecResult } from "../types/kitops.js";
  * you need. `options` is forwarded to the underlying spawn call, so you can
  * set `cwd` or custom `env` variables here.
  */
-export async function kit(command: KitCommand, args: string[], stdin: string, options: any = {}): Promise<ExecResult> {
+export async function kit(command: KitCommand, args: string[], stdin?: string, options: any = {}): Promise<ExecResult> {
   return runCommand(command, args, stdin, options);
 }

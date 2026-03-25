@@ -14,7 +14,7 @@ concurrency:
 
 env:
   KITOPS_PATH: "kitops-clone"
-  KITOPS_TS_DOCS_PATH: "docs/kitops-ts"
+  KITOPS_TS_DOCS_PATH: "docs/src/docs/kitops-ts"
 
 jobs:
   sync-docs-to-kitops:
