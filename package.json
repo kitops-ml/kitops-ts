@@ -1,6 +1,6 @@
 {
   "name": "@kitops/kitops-ts",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "TypeScript library for KitOps CLI",
   "type": "module",
   "main": "./dist/index.js",

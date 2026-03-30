@@ -1,5 +1,3 @@
-import { Layer } from "./kitops.js";
-
 export type Package = {
   name?: string,
   authors?: string[],
@@ -12,57 +10,55 @@ export type Package = {
  * OCI layer identity fields populated after a pack or inspect operation.
  * These are read-only from the registry; you don't set them when authoring a Kitfile.
  */
-interface LayerInfo {
+interface LayerIdentity {
   digest?: string;
   diffId?: string;
 }
 
-export interface ModelPart {
-  path?: string,
-  type?: string,
-  license?: string;
-}
-
-export interface Model {
-  name?: string,
-  path?: string,
-  parts?: ModelPart[],
-  license?: string,
-  description?: string,
-  format?: string,
-  parameters?: Record<string, string | number>
-}
-
-export interface Dataset {
-  name?: string,
-  path?: string,
+// Base interface for all layer types, which includes the common `path` and optional `description` fields.
+export interface LayerBase {
+  path: string;
   description?: string;
+}
+
+export interface ModelPart {
+  name?: string,
+  path?: string,
+  type?: string
+}
+
+export interface Model extends LayerBase {
+  name?: string,
+  framework?: string;
+  version?: string;
+  license?: string,
+  parts?: ModelPart[],
+  parameters?: unknown;
+}
+
+export interface Dataset extends LayerBase {
+  name?: string,
   license?: string;
   parameters?: unknown;
 }
 
-export interface Code {
-  path: string,
-  description: string
+export interface Code extends LayerBase {
+  license?: string;
 }
 
-export interface Doc {
-  path: string,
-  description: string
-}
+export interface Doc extends LayerBase {}
 
-export interface Prompt {
-  path?: string;
-  description?: string;
-}
+export interface Prompt extends LayerBase {}
 
 // Internal types for the kitfile definition, which include the OCI layer info fields
-interface KitfileModelPart extends ModelPart, LayerInfo { }
-interface KitfileModel extends Model, LayerInfo { }
-interface KitfileDataset extends Dataset, LayerInfo { }
-interface KitfileCode extends Code, LayerInfo { }
-interface KitfileDoc extends Doc, LayerInfo { }
-interface KitfilePrompt extends Prompt, LayerInfo { }
+interface KitfileModelPart extends ModelPart, LayerIdentity { }
+interface KitfileModel extends Model, LayerIdentity {
+  parts?: KitfileModelPart[];
+}
+interface KitfileDataset extends Dataset, LayerIdentity { }
+interface KitfileCode extends Code, LayerIdentity { }
+interface KitfileDoc extends Doc, LayerIdentity { }
+interface KitfilePrompt extends Prompt, LayerIdentity { }
 
 /**
  * Typed representation of a Kitfile.
