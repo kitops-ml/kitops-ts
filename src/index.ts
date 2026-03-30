@@ -62,6 +62,7 @@ export type {
 export type {
   Kitfile,
   Package,
+  LayerBase,
   Model,
   ModelPart,
   Dataset,
