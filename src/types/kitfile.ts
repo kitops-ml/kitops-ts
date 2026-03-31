@@ -16,7 +16,7 @@ interface LayerIdentity {
 }
 
 // Base interface for all layer types, which includes the common `path` and optional `description` fields.
-export interface LayerBase {
+export interface LayerCommons {
   path: string;
   description?: string;
 }
@@ -27,7 +27,7 @@ export interface ModelPart {
   type?: string
 }
 
-export interface Model extends LayerBase {
+export interface Model extends LayerCommons {
   name?: string,
   framework?: string;
   version?: string;
@@ -36,19 +36,19 @@ export interface Model extends LayerBase {
   parameters?: unknown;
 }
 
-export interface Dataset extends LayerBase {
+export interface Dataset extends LayerCommons {
   name?: string,
   license?: string;
   parameters?: unknown;
 }
 
-export interface Code extends LayerBase {
+export interface Code extends LayerCommons {
   license?: string;
 }
 
-export interface Doc extends LayerBase {}
+export interface Doc extends LayerCommons {}
 
-export interface Prompt extends LayerBase {}
+export interface Prompt extends LayerCommons {}
 
 // Internal types for the kitfile definition, which include the OCI layer info fields
 interface KitfileModelPart extends ModelPart, LayerIdentity { }

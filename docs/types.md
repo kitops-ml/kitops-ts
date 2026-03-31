@@ -427,12 +427,12 @@ type Package = {
 
 ---
 
-### `LayerBase`
+### `LayerCommons`
 
 Base interface extended by all Kitfile layer types. Provides the common `path` and `description` fields.
 
 ```typescript
-interface LayerBase {
+interface LayerCommons {
   path: string;
   description?: string;
 }
@@ -447,10 +447,10 @@ interface LayerBase {
 
 ### `Model`
 
-Model artifact definition in a Kitfile. Extends [`LayerBase`](#layerbase).
+Model artifact definition in a Kitfile. Extends [`LayerCommons`](#layerbase).
 
 ```typescript
-interface Model extends LayerBase {
+interface Model extends LayerCommons {
   name?: string;
   framework?: string;
   version?: string;
@@ -462,8 +462,8 @@ interface Model extends LayerBase {
 
 | Property | Type | Description |
 |---|---|---|
-| `path` | `string` | Path to the model file or directory. *(from `LayerBase`)* |
-| `description` | `string` | Human-readable description. *(from `LayerBase`)* |
+| `path` | `string` | Path to the model file or directory. *(from `LayerCommons`)* |
+| `description` | `string` | Human-readable description. *(from `LayerCommons`)* |
 | `name` | `string` | Display name for the model. |
 | `framework` | `string` | ML framework (e.g. `'pytorch'`, `'tensorflow'`). |
 | `version` | `string` | Model version. |
@@ -495,10 +495,10 @@ interface ModelPart {
 
 ### `Dataset`
 
-Dataset artifact definition in a Kitfile. Extends [`LayerBase`](#layerbase).
+Dataset artifact definition in a Kitfile. Extends [`LayerCommons`](#layerbase).
 
 ```typescript
-interface Dataset extends LayerBase {
+interface Dataset extends LayerCommons {
   name?: string;
   license?: string;
   parameters?: unknown;
@@ -507,8 +507,8 @@ interface Dataset extends LayerBase {
 
 | Property | Type | Description |
 |---|---|---|
-| `path` | `string` | Path to the dataset file or directory. *(from `LayerBase`)* |
-| `description` | `string` | Human-readable description. *(from `LayerBase`)* |
+| `path` | `string` | Path to the dataset file or directory. *(from `LayerCommons`)* |
+| `description` | `string` | Human-readable description. *(from `LayerCommons`)* |
 | `name` | `string` | Display name for the dataset. |
 | `license` | `string` | SPDX license identifier. |
 | `parameters` | `unknown` | Arbitrary dataset parameters. |
@@ -517,49 +517,49 @@ interface Dataset extends LayerBase {
 
 ### `Code`
 
-Source code artifact definition in a Kitfile. Extends [`LayerBase`](#layerbase).
+Source code artifact definition in a Kitfile. Extends [`LayerCommons`](#layerbase).
 
 ```typescript
-interface Code extends LayerBase {
+interface Code extends LayerCommons {
   license?: string;
 }
 ```
 
 | Property | Type | Description |
 |---|---|---|
-| `path` | `string` | Path to the source code file or directory. *(from `LayerBase`)* |
-| `description` | `string` | Human-readable description. *(from `LayerBase`)* |
+| `path` | `string` | Path to the source code file or directory. *(from `LayerCommons`)* |
+| `description` | `string` | Human-readable description. *(from `LayerCommons`)* |
 | `license` | `string` | SPDX license identifier. |
 
 ---
 
 ### `Doc`
 
-Documentation artifact definition in a Kitfile. Extends [`LayerBase`](#layerbase).
+Documentation artifact definition in a Kitfile. Extends [`LayerCommons`](#layerbase).
 
 ```typescript
-interface Doc extends LayerBase {}
+interface Doc extends LayerCommons {}
 ```
 
 | Property | Type | Description |
 |---|---|---|
-| `path` | `string` | Path to the documentation file or directory. *(from `LayerBase`)* |
-| `description` | `string` | Human-readable description. *(from `LayerBase`)* |
+| `path` | `string` | Path to the documentation file or directory. *(from `LayerCommons`)* |
+| `description` | `string` | Human-readable description. *(from `LayerCommons`)* |
 
 ---
 
 ### `Prompt`
 
-Prompt artifact definition in a Kitfile. Extends [`LayerBase`](#layerbase).
+Prompt artifact definition in a Kitfile. Extends [`LayerCommons`](#layerbase).
 
 ```typescript
-interface Prompt extends LayerBase {}
+interface Prompt extends LayerCommons {}
 ```
 
 | Property | Type | Description |
 |---|---|---|
-| `path` | `string` | Path to the prompt file or directory. *(from `LayerBase`)* |
-| `description` | `string` | Human-readable description. *(from `LayerBase`)* |
+| `path` | `string` | Path to the prompt file or directory. *(from `LayerCommons`)* |
+| `description` | `string` | Human-readable description. *(from `LayerCommons`)* |
 
 ---
 
