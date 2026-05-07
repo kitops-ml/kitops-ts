@@ -56,7 +56,8 @@ export type {
 export type {
   ModelKit,
   ExecResult,
-  KitCommand
+  KitCommand,
+  CancellablePromise
 } from './types/kitops.js';
 
 export type {
