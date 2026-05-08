@@ -1,5 +1,6 @@
-import { spawn } from 'child_process';
-import type { KitCommand, ExecResult } from '../types/kitops.js';
+import { spawn } from 'child_process'
+
+import type { ExecResult,KitCommand } from '../types/kitops.js'
 
 type ParsedTableResult = { [key: string]: string }
 
@@ -16,7 +17,7 @@ type ExecOptions = {
  * Re-reads KITOPS_CLI_PATH on each call so it can be set dynamically at runtime.
  */
 function getKitCli() {
-  return process.env.KITOPS_CLI_PATH || 'kit';
+  return process.env.KITOPS_CLI_PATH || 'kit'
 }
 
 /**
@@ -33,51 +34,51 @@ function getKitCli() {
  */
 export function runCommand(command: KitCommand, args: string[] = [], stdin?: string, options: ExecOptions = {}): Promise<ExecResult> {
   return new Promise((resolve, reject) => {
-    const fullArgs = [command, ...args];
+    const fullArgs = [command, ...args]
     const child = spawn(getKitCli(), fullArgs, {
       cwd: options.cwd || process.cwd(),
       env: { ...process.env, ...options.env },
       stdio: options.stdio || 'pipe',
-    });
+    })
 
-    let stdout = '';
-    let stderr = '';
+    let stdout = ''
+    let stderr = ''
 
     if (stdin && child.stdin) {
-      child.stdin.write(stdin);
-      child.stdin.end();
+      child.stdin.write(stdin)
+      child.stdin.end()
     }
 
     if (child.stdout) {
       child.stdout.on('data', (data) => {
-        stdout += data.toString();
-      });
+        stdout += data.toString()
+      })
     }
 
     if (child.stderr) {
       child.stderr.on('data', (data) => {
-        stderr += data.toString();
-      });
+        stderr += data.toString()
+      })
     }
 
     child.on('error', (error) => {
-      reject(`Failed to execute kit command: ${error.message}`);
-    });
+      reject(`Failed to execute kit command: ${error.message}`)
+    })
 
     child.on('close', (code) => {
       const result: ExecResult = {
         stdout: stdout.trim(),
         stderr: stderr.trim(),
         exitCode: code ?? 0,
-      };
+      }
 
       if (code !== 0) {
-        reject(`Kit command failed with exit code ${code}: ${stderr}`);
+        reject(`Kit command failed with exit code ${code}: ${stderr}`)
       } else {
-        resolve(result);
+        resolve(result)
       }
-    });
-  });
+    })
+  })
 }
 
 /**
@@ -92,32 +93,34 @@ export function runCommand(command: KitCommand, args: string[] = [], stdin?: str
  *   - arrays => repeated `--key=value` pairs, one per element
  */
 export function prepareArgs(options: Record<string, any>): string[] {
-  const args: string[] = [];
+  const args: string[] = []
 
   Object.entries(options).forEach(([key, value]) => {
-    if (value === undefined || value === null) return;
+    if (value === undefined || value === null) {
+      return
+    }
 
-    const flag = `--${key.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()}`;
+    const flag = `--${key.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()}`
 
     if (value === true) {
-      args.push(flag);
-      return;
+      args.push(flag)
+      return
     }
 
     if (value === false) {
-      args.push(`${flag}=false`);
-      return;
+      args.push(`${flag}=false`)
+      return
     }
 
-    const values = Array.isArray(value) ? value : [value];
+    const values = Array.isArray(value) ? value : [value]
     for (const val of values) {
       if (val !== undefined && val !== null) {
-        args.push(`${flag}=${val}`);
+        args.push(`${flag}=${val}`)
       }
     }
-  });
+  })
 
-  return args;
+  return args
 }
 
 /**
@@ -131,26 +134,26 @@ export function prepareArgs(options: Record<string, any>): string[] {
  * Returns an empty array for blank output rather than throwing.
  */
 export function parseTableOutput<T = ParsedTableResult[]>(output: string): T {
-  const lines = output.split('\n').filter(line => line.trim() !== '');
+  const lines = output.split('\n').filter(line => line.trim() !== '')
   if (lines.length === 0) {
-    return [] as T;
+    return [] as T
   }
 
-  const headers = lines[0].split(/\s{2,}/).map(header => header.toLowerCase().trim());
-  const data: ParsedTableResult[] = [];
+  const headers = lines[0].split(/\s{2,}/).map(header => header.toLowerCase().trim())
+  const data: ParsedTableResult[] = []
 
   for (let i = 1; i < lines.length; i++) {
-    const values = lines[i].split(/\s{2,}/).map(value => value.trim());
-    const entry: ParsedTableResult = {};
+    const values = lines[i].split(/\s{2,}/).map(value => value.trim())
+    const entry: ParsedTableResult = {}
 
     headers.forEach((header, index) => {
-      entry[header] = values[index] || '';
-    });
+      entry[header] = values[index] || ''
+    })
 
-    data.push(entry);
+    data.push(entry)
   }
 
-  return data as T;
+  return data as T
 }
 
 /**
@@ -174,14 +177,14 @@ export function parseTableOutput<T = ParsedTableResult[]>(output: string): T {
  * ```
  */
 export function parseKeyValueOutput(output: string): Record<string, string> {
-  const lines = output.split('\n');
-  const result: any = {};
+  const lines = output.split('\n')
+  const result: any = {}
   for (const line of lines) {
-    const [key, value] = line.split(':').map(s => s.trim());
+    const [key, value] = line.split(':').map(s => s.trim())
     if (key && value) {
-      const camelKey = key.replace(/ (\w)/g, (_, c) => c.toUpperCase());
-      result[camelKey] = value;
+      const camelKey = key.replace(/ (\w)/g, (_, c) => c.toUpperCase())
+      result[camelKey] = value
     }
   }
-  return result;
+  return result
 }

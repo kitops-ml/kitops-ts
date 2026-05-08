@@ -1,6 +1,6 @@
-import type { Kitfile } from "./kitfile.js";
-import type { Manifest } from "./manifest.js";
-import type { FilterFlag } from "./kitops.js";
+import type { Kitfile } from './kitfile.js'
+import type { FilterFlag } from './kitops.js'
+import type { Manifest } from './manifest.js'
 
 /**
  * Types for the various flags and results used by the KitOps CLI commands.
@@ -58,7 +58,7 @@ export type InspectResult = {
   cliVersion: string,
   kitfile: Kitfile,
   manifest: Manifest
-};
+}
 
 export type ListFlags = {
   format: 'table' | 'json' | 'template',

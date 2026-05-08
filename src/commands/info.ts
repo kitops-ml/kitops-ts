@@ -1,7 +1,8 @@
-import { parse as parseYaml } from "yaml";
-import { runCommand, prepareArgs } from "../core/exec.js";
-import type { Kitfile } from "../types/kitfile.js"
-import type { InfoFlags } from "../types/commands.js";
+import { parse as parseYaml } from 'yaml'
+
+import { prepareArgs,runCommand } from '../core/exec.js'
+import type { InfoFlags } from '../types/commands.js'
+import type { Kitfile } from '../types/kitfile.js'
 
 /**
  * Returns the parsed Kitfile for a ModelKit.
@@ -26,14 +27,14 @@ export async function info(path: string, flags?: InfoFlags): Promise<Kitfile> {
     args.push(...prepareArgs(flags))
   }
 
-  const result = await runCommand('info', args);
-  const kitfile = parseYaml(result.stdout) as Kitfile;
+  const result = await runCommand('info', args)
+  const kitfile = parseYaml(result.stdout) as Kitfile
 
   Object.defineProperty(kitfile, '_raw', {
     value: result.stdout,
     enumerable: false,
     writable: false,
-  });
+  })
 
-  return kitfile;
+  return kitfile
 }

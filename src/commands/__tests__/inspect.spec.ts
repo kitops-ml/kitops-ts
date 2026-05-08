@@ -1,11 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { inspect } from '../inspect';
-import { runCommand } from '../../core/exec';
-import type { Manifest } from '../../types.d';
+import { beforeEach,describe, expect, it, vi } from 'vitest'
 
-vi.mock('../../core/exec');
+import { runCommand } from '../../core/exec'
+import type { Manifest } from '../../types.d'
+import { inspect } from '../inspect'
 
-const mockRunCommand = vi.mocked(runCommand);
+vi.mock('../../core/exec')
+
+const mockRunCommand = vi.mocked(runCommand)
 
 const mockManifest: Manifest = {
   digest: 'sha256:1234567890abcdef',
@@ -25,7 +26,7 @@ const mockManifest: Manifest = {
           path: './model/part1.bin',
           digest: 'sha256:part1digest',
           diffId: 'sha256:part1diffid',
-        }
+        },
       ],
       digest: 'sha256:modeldigest',
       diffId: 'sha256:modeldiffid',
@@ -35,14 +36,14 @@ const mockManifest: Manifest = {
         path: './code/main.py',
         digest: 'sha256:codedigest',
         diffId: 'sha256:codediffid',
-      }
+      },
     ],
     datasets: [
       {
         path: './data/dataset.json',
         digest: 'sha256:datadigest',
         diffId: 'sha256:datadiffid',
-      }
+      },
     ],
     docs: [
       {
@@ -50,8 +51,8 @@ const mockManifest: Manifest = {
         description: 'Documentation file',
         digest: 'sha256:docsdigest',
         diffId: 'sha256:docsdiffid',
-      }
-    ]
+      },
+    ],
   },
   manifest: {
     schemaVersion: 2,
@@ -69,50 +70,50 @@ const mockManifest: Manifest = {
         annotations: {
           'org.opencontainers.image.title': 'model-layer',
         },
-      }
+      },
     ],
     annotations: {
       'org.opencontainers.image.created': '2024-01-01T00:00:00Z',
-    }
-  }
+    },
+  },
 }
 
 describe('inspect', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-  });
+    vi.clearAllMocks()
+  })
 
   it('should call runCommand with correct arguments when modelkit is provided', async () => {
     mockRunCommand.mockResolvedValue({
       stdout: JSON.stringify(mockManifest),
       stderr: '',
-      exitCode: 0
-    });
+      exitCode: 0,
+    })
 
-    const result = await inspect('my-model');
+    const result = await inspect('my-model')
 
-    expect(mockRunCommand).toHaveBeenCalledWith('inspect', ['my-model']);
-    expect(result).toEqual(mockManifest);
-  });
+    expect(mockRunCommand).toHaveBeenCalledWith('inspect', ['my-model'])
+    expect(result).toEqual(mockManifest)
+  })
 
   it('should parse JSON response correctly', async () => {
     mockRunCommand.mockResolvedValue({
       stdout: JSON.stringify(mockManifest),
       stderr: '',
-      exitCode: 0
-    });
+      exitCode: 0,
+    })
 
-    const result = await inspect('complex-model');
-    expect(result).toEqual(mockManifest);
-  });
+    const result = await inspect('complex-model')
+    expect(result).toEqual(mockManifest)
+  })
 
   it('should throw error when JSON parsing fails', async () => {
     mockRunCommand.mockResolvedValue({
       stdout: 'invalid json',
       stderr: '',
-      exitCode: 0
-    });
+      exitCode: 0,
+    })
 
-    await expect(inspect('invalid-model')).rejects.toThrow();
-  });
-});
+    await expect(inspect('invalid-model')).rejects.toThrow()
+  })
+})

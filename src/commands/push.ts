@@ -1,5 +1,5 @@
-import { prepareArgs, runCommand } from "../core/exec.js";
-import { TLSFlags } from "../types/commands.js";
+import { prepareArgs, runCommand } from '../core/exec.js'
+import { TLSFlags } from '../types/commands.js'
 
 /**
  * Pushes a ModelKit to a registry.
@@ -13,11 +13,11 @@ import { TLSFlags } from "../types/commands.js";
  * @see https://kitops.org/docs/cli/cli-reference/#kit-push
  */
 export async function push(source: string, destination?: string, flags?: TLSFlags): Promise<void> {
-  const args = destination ? [source, destination] : [source];
+  const args = destination ? [source, destination] : [source]
 
   if (flags) {
     args.push(...prepareArgs(flags))
   }
 
-  await runCommand('push', args);
+  await runCommand('push', args)
 }

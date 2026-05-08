@@ -1,5 +1,5 @@
-import { runCommand, prepareArgs } from "../core/exec.js";
-import type { UnpackFlags } from "../types/commands.js";
+import { prepareArgs,runCommand } from '../core/exec.js'
+import type { UnpackFlags } from '../types/commands.js'
 
 /**
  * Extracts a ModelKit with the given flags
@@ -14,5 +14,5 @@ export async function unpack(path: string, flags?: UnpackFlags): Promise<void> {
     args.push(...prepareArgs(flags))
   }
 
-  await runCommand('unpack', args);
+  await runCommand('unpack', args)
 }

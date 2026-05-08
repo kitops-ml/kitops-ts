@@ -1,5 +1,5 @@
-import { prepareArgs, runCommand } from "../core/exec.js";
-import { TLSFlags } from "../types/commands.js";
+import { prepareArgs, runCommand } from '../core/exec.js'
+import { TLSFlags } from '../types/commands.js'
 
 /**
  * Pulls a ModelKit from a registry into local storage.
@@ -12,11 +12,11 @@ import { TLSFlags } from "../types/commands.js";
  * @see https://kitops.org/docs/cli/cli-reference/#kit-pull
  */
 export async function pull(path: string, flags?: TLSFlags): Promise<void> {
-  const args = [path];
+  const args = [path]
 
   if (flags) {
     args.push(...prepareArgs(flags))
   }
 
-  await runCommand('pull', args);
+  await runCommand('pull', args)
 }
