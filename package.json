@@ -43,8 +43,7 @@
     "url": "https://github.com/kitops-ml/kitops-ts/issues"
   },
   "devDependencies": {
-    "@eslint/compat": "^2.1.0",
-    "@eslint/config-helpers": "^0.6.0",
+"@eslint/config-helpers": "^0.6.0",
     "@eslint/js": "^10.0.1",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@types/node": "^25.0.8",
@@ -60,7 +59,7 @@
   },
   "packageManager": "pnpm@10.30.3",
   "engines": {
-    "node": ">=23.0.0"
+    "node": ">=24.0.0"
   },
   "lint-staged": {
     "src/**/*.ts": "eslint --fix"

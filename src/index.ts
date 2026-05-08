@@ -61,6 +61,7 @@ export type {
   UnpackFlags,
   VersionResult,
 } from './types/commands.js'
+
 export type {
   Code,
   Dataset,
@@ -72,10 +73,13 @@ export type {
   Package,
   Prompt,
 } from './types/kitfile.js'
+
 export type {
   ExecResult,
   KitCommand,
-  ModelKit} from './types/kitops.js'
+  ModelKit,
+} from './types/kitops.js'
+
 export type {
   Manifest,
   ManifestAnnotations,

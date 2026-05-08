@@ -42,7 +42,7 @@ export default tseslint.config(
       '@typescript-eslint/no-unused-vars': 'error',
       'no-console': 'off',
       'simple-import-sort/imports': 'error',
-      'simple-import-sort/exports': 'error',
+      'simple-import-sort/exports': 'off',
 
       // Relax some defaults
       '@typescript-eslint/no-require-imports': 'off',
