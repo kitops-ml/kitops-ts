@@ -21,14 +21,34 @@ function getKitCli() {
 }
 
 /**
+ * Returns a `DOMException` named `'AbortError'`, passing the value through
+ * unchanged when it already is one. Any other reason is attached as `cause`.
+ */
+function toAbortError(reason: unknown): DOMException {
+  if (reason instanceof DOMException && reason.name === 'AbortError') {
+    return reason
+  }
+
+  const err = new DOMException('The operation was aborted', 'AbortError');
+  if (reason !== undefined) {
+    Object.assign(err, { cause: reason });
+  }
+
+  return err;
+}
+
+/**
  * Spawns the kit CLI and runs a single command, returning its captured output.
  *
- * Rejects if the process emits an 'error' event (e.g. binary not found) or
- * exits with a non-zero code. The rejection value is a plain string that
- * includes the exit code and stderr text so callers don't have to reconstruct it.
+ * Rejects in three ways:
+ * - `string` — spawn error (e.g. binary not found) or non-zero exit code; includes
+ *   the exit code and stderr text.
+ * - `DOMException` named `'AbortError'` — the signal was aborted; a non-AbortError
+ *   signal reason is available as `err.cause`.
  *
  * When `options.signal` is provided and aborted, the child process is sent `SIGTERM`
- * and the promise rejects with a `DOMException` named `'AbortError'`. If the signal
+ * and the promise always rejects with a `DOMException` named `'AbortError'`. If the
+ * signal carries a non-AbortError reason it is attached as `err.cause`. If the signal
  * is already aborted before spawning, the process is never started.
  *
  * @param stdin - Data to write to stdin before closing it (e.g., a password)
@@ -40,7 +60,7 @@ function getKitCli() {
 export function runCommand(command: KitCommand, args: string[] = [], stdin?: string, options: ExecOptions = {}): Promise<ExecResult> {
   return new Promise((resolve, reject) => {
     if (options.signal?.aborted) {
-      reject(options.signal.reason ?? new DOMException('The operation was aborted', 'AbortError'));
+      reject(toAbortError(options.signal.reason));
       return;
     }
 
@@ -58,6 +78,10 @@ export function runCommand(command: KitCommand, args: string[] = [], stdin?: str
     const onAbort = () => {
       aborted = true;
       child.kill('SIGTERM');
+    };
+
+    const cleanup = () => {
+      options.signal?.removeEventListener('abort', onAbort);
     };
 
     if (options.signal) {
@@ -82,14 +106,15 @@ export function runCommand(command: KitCommand, args: string[] = [], stdin?: str
     }
 
     child.on('error', (error) => {
+      cleanup();
       reject(`Failed to execute kit command: ${error.message}`);
     });
 
     child.on('close', (code) => {
-      options.signal?.removeEventListener('abort', onAbort);
+      cleanup();
 
       if (aborted) {
-        reject(options.signal?.reason ?? new DOMException('The operation was aborted', 'AbortError'));
+        reject(toAbortError(options.signal?.reason));
         return;
       }
 
