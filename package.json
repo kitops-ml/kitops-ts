@@ -19,7 +19,9 @@
     "dev": "tsc --watch",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix"
   },
   "keywords": [
     "kitops",
@@ -40,9 +42,17 @@
     "url": "https://github.com/kitops-ml/kitops-ts/issues"
   },
   "devDependencies": {
+    "@eslint/compat": "^2.1.0",
+    "@eslint/config-helpers": "^0.6.0",
+    "@eslint/js": "^10.0.1",
+    "@stylistic/eslint-plugin": "^5.10.0",
     "@types/node": "^25.0.8",
     "@vitest/ui": "^4.0.17",
+    "eslint": "^10.3.0",
+    "eslint-plugin-simple-import-sort": "^13.0.0",
+    "globals": "^17.6.0",
     "typescript": "^5.9.3",
+    "typescript-eslint": "^8.59.2",
     "vitest": "^4.0.17"
   },
   "packageManager": "pnpm@10.30.3",
