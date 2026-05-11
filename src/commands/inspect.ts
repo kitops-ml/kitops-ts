@@ -1,5 +1,5 @@
-import { runCommand, prepareArgs } from "../core/exec.js";
-import type { InspectFlags, InspectResult } from "../types/commands.js";
+import { prepareArgs,runCommand } from '../core/exec.js'
+import type { InspectFlags, InspectResult } from '../types/commands.js'
 
 /**
  * Returns the full OCI manifest and parsed Kitfile for a ModelKit.
@@ -10,12 +10,12 @@ import type { InspectFlags, InspectResult } from "../types/commands.js";
  * @see https://kitops.org/docs/cli/cli-reference/#kit-inspect
  */
 export async function inspect(path: string, flags?: InspectFlags): Promise<InspectResult> {
-  const args = [path];
+  const args = [path]
 
   if (flags) {
-    args.push(...prepareArgs(flags));
+    args.push(...prepareArgs(flags))
   }
 
-  const result = await runCommand('inspect', args);
-  return JSON.parse(result.stdout) as InspectResult;
+  const result = await runCommand('inspect', args)
+  return JSON.parse(result.stdout) as InspectResult
 }

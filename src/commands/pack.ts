@@ -1,5 +1,5 @@
-import { runCommand, prepareArgs } from "../core/exec.js";
-import type { PackFlags } from "../types/commands.js";
+import { prepareArgs,runCommand } from '../core/exec.js'
+import type { PackFlags } from '../types/commands.js'
 
 /**
  * Packages a ModelKit from a directory that contains a Kitfile.
@@ -17,7 +17,7 @@ export async function pack(directory: string = '.', flags?: PackFlags): Promise<
     args.push(...prepareArgs(flags))
   }
 
-  await runCommand('pack', args);
+  await runCommand('pack', args)
 
   // @TODO: return pack result (tag, digest) and any other useful info
 }

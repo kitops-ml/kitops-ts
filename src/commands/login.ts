@@ -1,5 +1,5 @@
-import { prepareArgs, runCommand } from "../core/exec.js";
-import { TLSFlags } from "../types/commands.js";
+import { prepareArgs, runCommand } from '../core/exec.js'
+import { TLSFlags } from '../types/commands.js'
 
 /**
  * Authenticates with a ModelKit registry.
@@ -9,13 +9,13 @@ import { TLSFlags } from "../types/commands.js";
  * @see https://kitops.org/docs/cli/cli-reference/#kit-login
  */
 export async function login(registry: string, username: string, password: string, flags?: TLSFlags): Promise<void> {
-  const args = [registry, '--username', username, '--password-stdin'];
+  const args = [registry, '--username', username, '--password-stdin']
 
   if (flags) {
     args.push(...prepareArgs(flags))
   }
 
-  await runCommand('login', args, password);
+  await runCommand('login', args, password)
 }
 
 /**
@@ -28,11 +28,11 @@ export async function login(registry: string, username: string, password: string
  * @see https://kitops.org/docs/cli/cli-reference/#kit-login
  */
 export async function loginUnsafe(registry: string, username: string, password: string, flags?: TLSFlags): Promise<void> {
-  const args = [registry, '--username', username, '--password', password];
+  const args = [registry, '--username', username, '--password', password]
 
   if (flags) {
     args.push(...prepareArgs(flags))
   }
 
-  await runCommand('login', args);
+  await runCommand('login', args)
 }
