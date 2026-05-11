@@ -1,6 +1,6 @@
-import { runCommand, prepareArgs, cancellable } from "../core/exec.js";
-import type { UnpackFlags } from "../types/commands.js";
-import type { CancellablePromise } from "../types/kitops.js";
+import { cancellable,prepareArgs, runCommand } from '../core/exec.js'
+import type { UnpackFlags } from '../types/commands.js'
+import type { CancellablePromise } from '../types/kitops.js'
 
 /**
  * Extracts a ModelKit with the given flags.
@@ -26,7 +26,7 @@ import type { CancellablePromise } from "../types/kitops.js";
  */
 export function unpack(path: string, flags?: UnpackFlags): CancellablePromise<void> {
   return cancellable((signal) => {
-    const args = [path, ...(flags ? prepareArgs(flags) : [])];
-    return runCommand('unpack', args, undefined, { signal }).then(() => {});
-  });
+    const args = [path, ...(flags ? prepareArgs(flags) : [])]
+    return runCommand('unpack', args, undefined, { signal }).then(() => {})
+  })
 }

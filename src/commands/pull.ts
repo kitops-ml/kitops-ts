@@ -1,6 +1,6 @@
-import { prepareArgs, runCommand, cancellable } from "../core/exec.js";
-import type { TLSFlags } from "../types/commands.js";
-import type { CancellablePromise } from "../types/kitops.js";
+import { cancellable,prepareArgs, runCommand } from '../core/exec.js'
+import type { TLSFlags } from '../types/commands.js'
+import type { CancellablePromise } from '../types/kitops.js'
 
 /**
  * Pulls a ModelKit from a registry into local storage.
@@ -30,7 +30,7 @@ import type { CancellablePromise } from "../types/kitops.js";
  */
 export function pull(path: string, flags?: TLSFlags): CancellablePromise<void> {
   return cancellable((signal) => {
-    const args = [path, ...(flags ? prepareArgs(flags) : [])];
-    return runCommand('pull', args, undefined, { signal }).then(() => {});
-  });
+    const args = [path, ...(flags ? prepareArgs(flags) : [])]
+    return runCommand('pull', args, undefined, { signal }).then(() => {})
+  })
 }

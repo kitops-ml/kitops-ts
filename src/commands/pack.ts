@@ -1,6 +1,6 @@
-import { runCommand, prepareArgs, cancellable } from "../core/exec.js";
-import type { PackFlags } from "../types/commands.js";
-import type { CancellablePromise } from "../types/kitops.js";
+import { cancellable,prepareArgs, runCommand } from '../core/exec.js'
+import type { PackFlags } from '../types/commands.js'
+import type { CancellablePromise } from '../types/kitops.js'
 
 /**
  * Packages a ModelKit from a directory that contains a Kitfile.
@@ -29,9 +29,9 @@ import type { CancellablePromise } from "../types/kitops.js";
  */
 export function pack(directory: string = '.', flags?: PackFlags): CancellablePromise<void> {
   return cancellable((signal) => {
-    const args = [directory, ...(flags ? prepareArgs(flags) : [])];
-    return runCommand('pack', args, undefined, { signal }).then(() => {});
-  });
+    const args = [directory, ...(flags ? prepareArgs(flags) : [])]
+    return runCommand('pack', args, undefined, { signal }).then(() => {})
+  })
 
   // @TODO: return pack result (tag, digest) and any other useful info
 }
