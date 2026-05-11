@@ -1,6 +1,6 @@
 export { diff } from './diff.js'
-export { init } from './init.js'
 export { info } from './info.js'
+export { init } from './init.js'
 export { inspect } from './inspect.js'
 export { kit } from './kit.js'
 export { list } from './list.js'

@@ -1,5 +1,5 @@
-import { runCommand } from "../core/exec.js";
-import type { KitCommand, ExecResult } from "../types/kitops.js";
+import { runCommand } from '../core/exec.js'
+import type { ExecResult,KitCommand } from '../types/kitops.js'
 
 /**
  * Low-level escape hatch for running any `kit` subcommand directly.
@@ -9,5 +9,5 @@ import type { KitCommand, ExecResult } from "../types/kitops.js";
  * set `cwd` or custom `env` variables here.
  */
 export async function kit(command: KitCommand, args: string[], stdin?: string, options: any = {}): Promise<ExecResult> {
-  return runCommand(command, args, stdin, options);
+  return runCommand(command, args, stdin, options)
 }

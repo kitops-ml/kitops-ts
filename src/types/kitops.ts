@@ -1,6 +1,6 @@
 /** The content layers a ModelKit can contain. */
-export type Layer =
-  | 'model'
+export type Layer
+  = | 'model'
   | 'datasets'
   | 'code'
   | 'docs'
@@ -26,14 +26,14 @@ export type ModelKit = {
   name: string;
   size: string;
   digest: string;
-};
+}
 
 /**
  * Union of all subcommands accepted by the `kit` binary.
  * @see https://kitops.org/docs/cli/cli-reference/
  */
-export type KitCommand =
-  | 'diff'
+export type KitCommand
+  = | 'diff'
   | 'info'
   | 'inspect'
   | 'init'
@@ -46,14 +46,14 @@ export type KitCommand =
   | 'remove'
   | 'tag'
   | 'unpack'
-  | 'version';
+  | 'version'
 
 /** Raw output from a spawned `kit` process. */
 export type ExecResult = {
   stdout: string;
   stderr: string;
   exitCode: number;
-};
+}
 
 /**
  * A `Promise<T>` that exposes a `cancel()` method to abort the underlying `kit` process.
@@ -81,4 +81,4 @@ export type ExecResult = {
 export type CancellablePromise<T> = Promise<T> & {
   /** Kills the underlying `kit` process and rejects the promise with an `AbortError`. */
   cancel: () => void;
-};
+}

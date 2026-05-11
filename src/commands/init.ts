@@ -1,6 +1,7 @@
-import { runCommand, prepareArgs } from '../core/exec.js';
-import { resolve } from 'path';
-import type { InitFlags, InitResult } from '../types/commands.js';
+import { resolve } from 'path'
+
+import { prepareArgs,runCommand } from '../core/exec.js'
+import type { InitFlags, InitResult } from '../types/commands.js'
 
 /**
  * Scans `path` for recognizable ML artifacts and generates a Kitfile.
@@ -20,12 +21,12 @@ export async function init(directory: string = '.', flags?: InitFlags): Promise<
     args.push(...prepareArgs(flags))
   }
 
-  await runCommand('init', args);
+  await runCommand('init', args)
 
-  const resolvedPath = resolve(directory);
+  const resolvedPath = resolve(directory)
 
   return {
     path: resolvedPath,
-    kitfilePath: resolve(resolvedPath, 'Kitfile')
+    kitfilePath: resolve(resolvedPath, 'Kitfile'),
   }
 }
