@@ -54,3 +54,31 @@ export type ExecResult = {
   stderr: string;
   exitCode: number;
 }
+
+/**
+ * A `Promise<T>` that exposes a `cancel()` method to abort the underlying `kit` process.
+ *
+ * Calling `cancel()` sends `SIGTERM` to the child process and rejects the promise with a
+ * `DOMException` named `'AbortError'`. In environments where `AbortController` is unavailable,
+ * `cancel()` is a no-op and the operation runs to completion normally.
+ *
+ * Because `CancellablePromise<T>` extends `Promise<T>`, existing call sites using `await`
+ * require no changes. Hold the reference before awaiting to gain access to `cancel()`.
+ *
+ * @example
+ * ```ts
+ * const op = pull('registry.example.com/org/model:v1');
+ * setTimeout(() => op.cancel(), 30_000);
+ * try {
+ *   await op;
+ * } catch (e) {
+ *   if (e instanceof DOMException && e.name === 'AbortError') {
+ *     console.log('Pull was cancelled');
+ *   }
+ * }
+ * ```
+ */
+export type CancellablePromise<T> = Promise<T> & {
+  /** Kills the underlying `kit` process and rejects the promise with an `AbortError`. */
+  cancel: () => void;
+}

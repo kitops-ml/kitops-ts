@@ -1,6 +1,6 @@
 import { spawn } from 'child_process'
 
-import type { ExecResult,KitCommand } from '../types/kitops.js'
+import type { CancellablePromise,ExecResult, KitCommand } from '../types/kitops.js'
 
 type ParsedTableResult = { [key: string]: string }
 
@@ -10,6 +10,7 @@ type ExecOptions = {
   cwd?: string,
   env?: Record<string, string>,
   stdio?: StdIO | StdIO[],
+  signal?: AbortSignal,
 }
 
 /**
@@ -21,19 +22,49 @@ function getKitCli() {
 }
 
 /**
+ * Returns a `DOMException` named `'AbortError'`, passing the value through
+ * unchanged when it already is one. Any other reason is attached as `cause`.
+ */
+function toAbortError(reason: unknown): DOMException {
+  if (reason instanceof DOMException && reason.name === 'AbortError') {
+    return reason
+  }
+
+  const err = new DOMException('The operation was aborted', 'AbortError')
+  if (reason !== undefined) {
+    Object.assign(err, { cause: reason })
+  }
+
+  return err
+}
+
+/**
  * Spawns the kit CLI and runs a single command, returning its captured output.
  *
- * Rejects if the process emits an 'error' event (e.g. binary not found) or
- * exits with a non-zero code. The rejection value is a plain string that
- * includes the exit code and stderr text so callers don't have to reconstruct it.
+ * Rejects in three ways:
+ * - `string` — spawn error (e.g. binary not found) or non-zero exit code; includes
+ *   the exit code and stderr text.
+ * - `DOMException` named `'AbortError'` — the signal was aborted; a non-AbortError
+ *   signal reason is available as `err.cause`.
+ *
+ * When `options.signal` is provided and aborted, the child process is sent `SIGTERM`
+ * and the promise always rejects with a `DOMException` named `'AbortError'`. If the
+ * signal carries a non-AbortError reason it is attached as `err.cause`. If the signal
+ * is already aborted before spawning, the process is never started.
  *
  * @param stdin - Data to write to stdin before closing it (e.g., a password)
  * @param options.cwd - Working directory for the spawned process (default: process.cwd())
  * @param options.env - Extra environment variables merged on top of process.env
  * @param options.stdio - stdio configuration for the spawned process (default: 'pipe' to capture output)
+ * @param options.signal - AbortSignal that kills the child process when fired
  */
 export function runCommand(command: KitCommand, args: string[] = [], stdin?: string, options: ExecOptions = {}): Promise<ExecResult> {
   return new Promise((resolve, reject) => {
+    if (options.signal?.aborted) {
+      reject(toAbortError(options.signal.reason))
+      return
+    }
+
     const fullArgs = [command, ...args]
     const child = spawn(getKitCli(), fullArgs, {
       cwd: options.cwd || process.cwd(),
@@ -43,6 +74,20 @@ export function runCommand(command: KitCommand, args: string[] = [], stdin?: str
 
     let stdout = ''
     let stderr = ''
+    let aborted = false
+
+    const onAbort = () => {
+      aborted = true
+      child.kill('SIGTERM')
+    }
+
+    const cleanup = () => {
+      options.signal?.removeEventListener('abort', onAbort)
+    }
+
+    if (options.signal) {
+      options.signal.addEventListener('abort', onAbort, { once: true })
+    }
 
     if (stdin && child.stdin) {
       child.stdin.write(stdin)
@@ -62,10 +107,18 @@ export function runCommand(command: KitCommand, args: string[] = [], stdin?: str
     }
 
     child.on('error', (error) => {
+      cleanup()
       reject(`Failed to execute kit command: ${error.message}`)
     })
 
     child.on('close', (code) => {
+      cleanup()
+
+      if (aborted) {
+        reject(toAbortError(options.signal?.reason))
+        return
+      }
+
       const result: ExecResult = {
         stdout: stdout.trim(),
         stderr: stderr.trim(),
@@ -79,6 +132,26 @@ export function runCommand(command: KitCommand, args: string[] = [], stdin?: str
       }
     })
   })
+}
+
+/**
+ * Wraps an async factory in a {@link CancellablePromise}.
+ *
+ * The library creates and owns the `AbortController` internally — callers never need to
+ * set one up. Call `.cancel()` on the returned promise to abort the operation at any time.
+ *
+ * Falls back gracefully to a no-op `.cancel()` in environments where `AbortController`
+ * is unavailable, so the operation still runs to completion safely.
+ *
+ * @param fn - Factory that receives an optional `AbortSignal` and returns a `Promise<T>`.
+ */
+export function cancellable<T>(fn: (signal: AbortSignal | undefined) => Promise<T>): CancellablePromise<T> {
+  if (typeof AbortController === 'undefined') {
+    return Object.assign(fn(undefined), { cancel: () => {} })
+  }
+
+  const ac = new AbortController()
+  return Object.assign(fn(ac.signal), { cancel: () => ac.abort() })
 }
 
 /**
