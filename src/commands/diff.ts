@@ -1,5 +1,5 @@
-import { cancellable, runCommand } from '../core/exec.js'
-import type { DiffLayerEntry, DiffResult } from '../types/commands.js'
+import { cancellable, prepareArgs, runCommand } from '../core/exec.js'
+import type { DiffFlags, DiffLayerEntry, DiffResult } from '../types/commands.js'
 import type { CancellablePromise } from '../types/kitops.js'
 
 /**
@@ -13,9 +13,10 @@ import type { CancellablePromise } from '../types/kitops.js'
  *
  * @see https://kitops.org/docs/cli/cli-reference/#kit-diff
  */
-export function diff(reference1: string, reference2: string): CancellablePromise<DiffResult> {
+export function diff(reference1: string, reference2: string, flags?: DiffFlags): CancellablePromise<DiffResult> {
   return cancellable((signal) => {
-    return runCommand('diff', [reference1, reference2], undefined, { signal }).then((result) =>
+    const args = [reference1, reference2, ...(flags ? prepareArgs(flags) : [])]
+    return runCommand('diff', args, undefined, { signal }).then((result) =>
       parseDiffOutput(result.stdout, reference1, reference2),
     )
   })

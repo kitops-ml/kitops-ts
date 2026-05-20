@@ -391,12 +391,13 @@ await remove('registry.example.com/org/my-model:v0.9.0', { force: true, remote: 
 
 Removes all locally cached ModelKits. Equivalent to `remove('', { all: true })` but without requiring a dummy path argument.
 
+To remove all kits from a remote registry, use `remove('', { all: true, remote: true })` instead.
+
 **Parameters**
 
 | Name | Type | Description |
 |---|---|---|
 | `flags.force` | `boolean` | Skip confirmation prompt. |
-| `flags.remote` | `boolean` | Remove from the registry instead of local storage. |
 
 **Returns** `CancellablePromise<void>`
 
@@ -408,7 +409,7 @@ await removeAll();
 
 ---
 
-### `diff(reference1, reference2)`
+### `diff(reference1, reference2, flags?)`
 
 Compares two ModelKits and returns a structured diff of their layers.
 
@@ -418,6 +419,7 @@ Compares two ModelKits and returns a structured diff of their layers.
 |---|---|---|
 | `reference1` | `string` | First ModelKit reference. Prefix with `local://` or `remote://` to be explicit. |
 | `reference2` | `string` | Second ModelKit reference. |
+| `flags.plainHttp` | `boolean` | Allow plain HTTP connections to the registry. |
 
 **Returns** `CancellablePromise<DiffResult>`
 

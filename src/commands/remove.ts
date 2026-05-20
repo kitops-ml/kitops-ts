@@ -24,10 +24,13 @@ export function remove(path: string, flags?: RemoveFlags): CancellablePromise<vo
  * Removes all locally cached ModelKits. Equivalent to `remove('', { all: true })` but
  * avoids passing a dummy path argument.
  *
+ * To remove all kits from a remote registry, use `remove('', { all: true, remote: true })`
+ * instead.
+ *
  * Returns a {@link CancellablePromise}. Call `.cancel()` on the returned value to abort
  * the operation at any time.
  */
-export function removeAll(flags?: Omit<RemoveFlags, 'all'>): CancellablePromise<void> {
+export function removeAll(flags?: Omit<RemoveFlags, 'all' | 'remote'>): CancellablePromise<void> {
   return cancellable((signal) => {
     const args = ['--all']
     if (flags) {

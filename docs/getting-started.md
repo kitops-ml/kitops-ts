@@ -50,13 +50,14 @@ const timeout = setTimeout(() => op.cancel(), 60_000);
 
 try {
   await op;
-  clearTimeout(timeout);
 } catch (err) {
   if (err instanceof DOMException && err.name === 'AbortError') {
     console.log('Pull was cancelled');
   } else {
     throw err; // propagate real errors
   }
+} finally {
+  clearTimeout(timeout);
 }
 ```
 

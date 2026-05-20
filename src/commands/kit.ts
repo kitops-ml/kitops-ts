@@ -1,5 +1,5 @@
 import { cancellable, runCommand } from '../core/exec.js'
-import type { CancellablePromise, ExecResult, KitCommand } from '../types/kitops.js'
+import type { CancellablePromise, ExecResult, KitCommand, KitOptions } from '../types/kitops.js'
 
 /**
  * Low-level escape hatch for running any `kit` subcommand directly.
@@ -11,7 +11,7 @@ import type { CancellablePromise, ExecResult, KitCommand } from '../types/kitops
  * Returns a {@link CancellablePromise}. Call `.cancel()` on the returned value to abort
  * the operation and kill the underlying `kit` process at any time.
  */
-export function kit(command: KitCommand, args: string[], stdin?: string, options: any = {}): CancellablePromise<ExecResult> {
+export function kit(command: KitCommand, args: string[], stdin?: string, options: KitOptions = {}): CancellablePromise<ExecResult> {
   return cancellable((signal) => {
     return runCommand(command, args, stdin, { ...options, signal })
   })

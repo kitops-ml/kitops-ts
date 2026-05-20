@@ -36,7 +36,7 @@ await push('registry.example.com/org/my-model:v1.0.0');
 
 Every function returns a `CancellablePromise<T>` — a standard `Promise` with an extra `.cancel()` method that kills the underlying `kit` process and rejects with a `DOMException` named `'AbortError'`. Existing `await` code works without any changes; `.cancel()` is opt-in.
 
-### `init(path?, flags?)`
+### `init(directory?, flags?)`
 
 Scans a directory for ML artifacts and generates a Kitfile. Automatically detects models, datasets, code, and docs by file extension.
 
@@ -100,7 +100,7 @@ await unpack('./output', { filter: 'datasets:validation,docs' });
 await unpack('./output', { ignoreExisting: true });
 ```
 
-### `list(repository?)`
+### `list(repository?, flags?)`
 
 Lists ModelKits. Omit the argument to list local storage; pass a registry/repository to list remote tags.
 
@@ -113,7 +113,7 @@ for (const kit of local) {
 }
 ```
 
-### `push(source, destination?)`
+### `push(source, destination?, flags?)`
 
 Pushes a ModelKit to a registry. Supply `destination` to push under a different reference (e.g. promote from staging to production).
 
@@ -124,7 +124,7 @@ await push('registry.example.com/org/my-model:v1.0.0');
 await push('staging.example.com/my-model:rc1', 'registry.example.com/org/my-model:v1.0.0');
 ```
 
-### `pull(reference)`
+### `pull(path, flags?)`
 
 Pulls a ModelKit from a registry into local storage.
 
@@ -132,7 +132,7 @@ Pulls a ModelKit from a registry into local storage.
 await pull('registry.example.com/org/my-model:v1.0.0');
 ```
 
-### `loginUnsafe(registry, username, password)`
+### `loginUnsafe(registry, username, password, flags?)`
 
 Authenticates with a registry. The password is passed as a CLI argument and will be visible in the process list — use `login` instead for production.
 
@@ -140,7 +140,7 @@ Authenticates with a registry. The password is passed as a CLI argument and will
 await loginUnsafe('registry.example.com', 'user', 'pass');
 ```
 
-### `login(registry, username, password)`
+### `login(registry, username, password, flags?)`
 
 Same as `loginUnsafe` but passes the password via stdin, keeping it out of the process list. Preferred for CI and automated workflows.
 
@@ -189,7 +189,7 @@ Removes all locally cached ModelKits.
 await removeAll();
 ```
 
-### `diff(reference1, reference2)`
+### `diff(reference1, reference2, flags?)`
 
 Compares two ModelKits and returns a structured diff of their layers.
 
@@ -211,7 +211,7 @@ const { version, commit, built, goVersion } = await version();
 console.log(`kit ${version} (${commit})`);
 ```
 
-### `kit(command, args, options?)`
+### `kit(command, args, stdin?, options?)`
 
 Low-level escape hatch for running any `kit` subcommand directly, useful when the higher-level wrappers don't expose a flag you need.
 
@@ -234,13 +234,14 @@ const timeout = setTimeout(() => op.cancel(), 30_000);
 
 try {
   await op;
-  clearTimeout(timeout);
 } catch (err) {
   if (err instanceof DOMException && err.name === 'AbortError') {
     console.log('Push was cancelled');
   } else {
     throw err;
   }
+} finally {
+  clearTimeout(timeout);
 }
 ```
 
@@ -248,14 +249,21 @@ Since `CancellablePromise` extends `Promise`, all existing `await` usage continu
 
 ## Error handling
 
-All functions reject with a string message that includes the exit code and stderr output from the CLI. Wrap calls in `try/catch` to handle failures:
+Functions can reject in two ways:
+
+- **CLI failure** — rejects with a string message that includes the exit code and stderr output from the CLI.
+- **Cancellation** — rejects with a `DOMException` named `'AbortError'` when `.cancel()` is called on a `CancellablePromise`.
 
 ```typescript
 try {
   await push('registry.example.com/org/my-model:v1.0.0');
 } catch (err) {
-  console.error(err); // "Kit command failed with exit code 1: ..."
-  process.exit(1);
+  if (err instanceof DOMException && err.name === 'AbortError') {
+    console.log('Push was cancelled');
+  } else {
+    console.error(err); // "Kit command failed with exit code 1: ..."
+    process.exit(1);
+  }
 }
 ```
 
