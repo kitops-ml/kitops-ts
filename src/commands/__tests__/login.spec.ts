@@ -3,7 +3,10 @@ import { beforeEach,describe, expect, it, vi } from 'vitest'
 import { runCommand } from '../../core/exec'
 import { login, loginUnsafe } from '../login'
 
-vi.mock('../../core/exec')
+vi.mock('../../core/exec', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../core/exec')>()
+  return { ...actual, runCommand: vi.fn() }
+})
 
 const mockRunCommand = vi.mocked(runCommand)
 
@@ -27,7 +30,7 @@ describe('loginUnsafe', () => {
       'testuser',
       '--password',
       'testpass',
-    ])
+    ], undefined, { signal: expect.any(AbortSignal) })
   })
 
   it('should handle successful login', async () => {
@@ -63,7 +66,7 @@ describe('loginUnsafe', () => {
       'testuser',
       '--password',
       'testpass',
-    ])
+    ], undefined, { signal: expect.any(AbortSignal) })
   })
 
   it('should handle special characters in credentials', async () => {
@@ -84,7 +87,7 @@ describe('loginUnsafe', () => {
       specialUsername,
       '--password',
       specialPassword,
-    ])
+    ], undefined, { signal: expect.any(AbortSignal) })
   })
 
   it('should handle different registry formats', async () => {
@@ -109,7 +112,7 @@ describe('loginUnsafe', () => {
         'user',
         '--password',
         'pass',
-      ])
+      ], undefined, { signal: expect.any(AbortSignal) })
     }
 
     expect(mockRunCommand).toHaveBeenCalledTimes(registries.length)
@@ -146,6 +149,7 @@ describe('login', () => {
       'login',
       ['registry.example.com', '--username', 'testuser', '--password-stdin'],
       'testpass',
+      { signal: expect.any(AbortSignal) },
     )
   })
 

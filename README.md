@@ -34,6 +34,8 @@ await push('registry.example.com/org/my-model:v1.0.0');
 
 ## API
 
+Every function returns a `CancellablePromise<T>` — a standard `Promise` with an extra `.cancel()` method that kills the underlying `kit` process and rejects with a `DOMException` named `'AbortError'`. Existing `await` code works without any changes; `.cancel()` is opt-in.
+
 ### `init(path?, flags?)`
 
 Scans a directory for ML artifacts and generates a Kitfile. Automatically detects models, datasets, code, and docs by file extension.
@@ -49,22 +51,22 @@ const result = await init('./my-model', {
 console.log(result.kitfilePath); // absolute path to the generated Kitfile
 ```
 
-### `info(repository, tag, flags?)`
+### `info(path, flags?)`
 
 Returns the parsed Kitfile for a ModelKit. The result also carries a non-enumerable `_raw` property with the original YAML string.
 
 ```typescript
-const kitfile = await info('registry.example.com/org/my-model', 'v1.0.0');
+const kitfile = await info('registry.example.com/org/my-model:v1.0.0');
 console.log(kitfile.package?.name);
 console.log(kitfile.model?.path);
 ```
 
-### `inspect(repository, tag, flags?)`
+### `inspect(path, flags?)`
 
 Returns the full OCI manifest and parsed Kitfile. Use `flags.remote` to inspect directly from a registry without pulling first.
 
 ```typescript
-const result = await inspect('registry.example.com/org/my-model', 'v1.0.0', { remote: true });
+const result = await inspect('registry.example.com/org/my-model:v1.0.0', { remote: true });
 console.log(result.digest);
 console.log(result.manifest.layers);
 ```
@@ -140,7 +142,7 @@ await loginUnsafe('registry.example.com', 'user', 'pass');
 
 ### `login(registry, username, password)`
 
-Same as `login` but passes the password via stdin, keeping it out of the process list. Preferred for CI and automated workflows.
+Same as `loginUnsafe` but passes the password via stdin, keeping it out of the process list. Preferred for CI and automated workflows.
 
 ```typescript
 await login(
@@ -164,19 +166,40 @@ Assigns a new tag to an existing local ModelKit without re-packing. Use `push` a
 await tag('registry.example.com/org/my-model:rc1', 'registry.example.com/org/my-model:v1.0.0');
 ```
 
-### `remove(registry, repository, tagOrDigest, flags?)`
+### `remove(path, flags?)`
 
 Removes a ModelKit from local storage or a remote registry.
 
 ```typescript
 // Remove a specific tag
-await remove('registry.example.com', 'org/my-model', 'v0.9.0');
+await remove('registry.example.com/org/my-model:v0.9.0');
 
 // Remove all locally cached ModelKits
-await remove('', '', '', { all: true });
+await removeAll();
 
 // Force-remove from the remote registry
-await remove('registry.example.com', 'org/my-model', 'v0.9.0', { force: true, remote: true });
+await remove('registry.example.com/org/my-model:v0.9.0', { force: true, remote: true });
+```
+
+### `removeAll(flags?)`
+
+Removes all locally cached ModelKits.
+
+```typescript
+await removeAll();
+```
+
+### `diff(reference1, reference2)`
+
+Compares two ModelKits and returns a structured diff of their layers.
+
+```typescript
+const result = await diff(
+  'registry.example.com/org/my-model:v1.0.0',
+  'registry.example.com/org/my-model:v1.1.0',
+);
+console.log('Shared layers:', result.sharedLayers.length);
+console.log('New layers:', result.uniqueToKit2);
 ```
 
 ### `version()`
@@ -193,9 +216,35 @@ console.log(`kit ${version} (${commit})`);
 Low-level escape hatch for running any `kit` subcommand directly, useful when the higher-level wrappers don't expose a flag you need.
 
 ```typescript
-const result = await kit('pack', ['.', '--tag', 'my-model:latest'], { cwd: '/path/to/project' });
+const result = await kit('pack', ['.', '--tag', 'my-model:latest'], undefined, { cwd: '/path/to/project' });
 console.log(result.stdout);
 ```
+
+## Cancellation
+
+Every function returns a `CancellablePromise`. Call `.cancel()` at any time to kill the underlying `kit` process. The promise rejects with a `DOMException` named `'AbortError'`.
+
+```typescript
+import { push } from '@kitops/kitops-ts';
+
+const op = push('registry.example.com/org/my-model:v1.0.0');
+
+// Cancel after 30 seconds
+const timeout = setTimeout(() => op.cancel(), 30_000);
+
+try {
+  await op;
+  clearTimeout(timeout);
+} catch (err) {
+  if (err instanceof DOMException && err.name === 'AbortError') {
+    console.log('Push was cancelled');
+  } else {
+    throw err;
+  }
+}
+```
+
+Since `CancellablePromise` extends `Promise`, all existing `await` usage continues to work without any changes.
 
 ## Error handling
 

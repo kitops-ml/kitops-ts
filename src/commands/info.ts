@@ -1,8 +1,9 @@
 import { parse as parseYaml } from 'yaml'
 
-import { prepareArgs,runCommand } from '../core/exec.js'
+import { cancellable, prepareArgs, runCommand } from '../core/exec.js'
 import type { InfoFlags } from '../types/commands.js'
 import type { Kitfile } from '../types/kitfile.js'
+import type { CancellablePromise } from '../types/kitops.js'
 
 /**
  * Returns the parsed Kitfile for a ModelKit.
@@ -17,24 +18,26 @@ import type { Kitfile } from '../types/kitfile.js'
  *
  * Use `flags.filter` to limit which layers are included in the output.
  *
+ * Returns a {@link CancellablePromise}. Call `.cancel()` on the returned value to abort
+ * the operation and kill the underlying `kit` process at any time.
+ *
  * @param path - Full ModelKit reference path in the form of `registry/repository[:tag|@digest]`.
  * @see https://kitops.org/docs/cli/cli-reference/#kit-info
  */
-export async function info(path: string, flags?: InfoFlags): Promise<Kitfile> {
-  const args = [path]
-
-  if (flags) {
-    args.push(...prepareArgs(flags))
-  }
-
-  const result = await runCommand('info', args)
-  const kitfile = parseYaml(result.stdout) as Kitfile
-
-  Object.defineProperty(kitfile, '_raw', {
-    value: result.stdout,
-    enumerable: false,
-    writable: false,
+export function info(path: string, flags?: InfoFlags): CancellablePromise<Kitfile> {
+  return cancellable((signal) => {
+    const args = [path]
+    if (flags) {
+      args.push(...prepareArgs(flags))
+    }
+    return runCommand('info', args, undefined, { signal }).then((result) => {
+      const kitfile = parseYaml(result.stdout) as Kitfile
+      Object.defineProperty(kitfile, '_raw', {
+        value: result.stdout,
+        enumerable: false,
+        writable: false,
+      })
+      return kitfile
+    })
   })
-
-  return kitfile
 }

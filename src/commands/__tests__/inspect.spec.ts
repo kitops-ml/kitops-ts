@@ -4,7 +4,10 @@ import { runCommand } from '../../core/exec'
 import type { Manifest } from '../../types.d'
 import { inspect } from '../inspect'
 
-vi.mock('../../core/exec')
+vi.mock('../../core/exec', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../core/exec')>()
+  return { ...actual, runCommand: vi.fn() }
+})
 
 const mockRunCommand = vi.mocked(runCommand)
 
@@ -92,7 +95,7 @@ describe('inspect', () => {
 
     const result = await inspect('my-model')
 
-    expect(mockRunCommand).toHaveBeenCalledWith('inspect', ['my-model'])
+    expect(mockRunCommand).toHaveBeenCalledWith('inspect', ['my-model'], undefined, { signal: expect.any(AbortSignal) })
     expect(result).toEqual(mockManifest)
   })
 

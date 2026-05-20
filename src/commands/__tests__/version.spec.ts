@@ -3,7 +3,10 @@ import { beforeEach,describe, expect, it, vi } from 'vitest'
 import { parseKeyValueOutput,runCommand } from '../../core/exec'
 import { version } from '../version'
 
-vi.mock('../../core/exec')
+vi.mock('../../core/exec', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../core/exec')>()
+  return { ...actual, runCommand: vi.fn(), parseKeyValueOutput: vi.fn() }
+})
 
 const mockRunCommand = vi.mocked(runCommand)
 const mockParseKeyValueOutput = vi.mocked(parseKeyValueOutput)
@@ -19,7 +22,7 @@ describe('version', () => {
 
     await version()
 
-    expect(mockRunCommand).toHaveBeenCalledWith('version')
+    expect(mockRunCommand).toHaveBeenCalledWith('version', [], undefined, { signal: expect.any(AbortSignal) })
   })
 
   it('should return parsed version info', async () => {

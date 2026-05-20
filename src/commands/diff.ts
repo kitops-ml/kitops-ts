@@ -1,5 +1,6 @@
-import { runCommand } from '../core/exec.js'
+import { cancellable, runCommand } from '../core/exec.js'
 import type { DiffLayerEntry, DiffResult } from '../types/commands.js'
+import type { CancellablePromise } from '../types/kitops.js'
 
 /**
  * Compares two ModelKits and returns the differences in their layers.
@@ -7,11 +8,17 @@ import type { DiffLayerEntry, DiffResult } from '../types/commands.js'
  * Prefix references with `local://` for local storage or `remote://` for remote registries.
  * If no prefix is given, local storage is checked first.
  *
+ * Returns a {@link CancellablePromise}. Call `.cancel()` on the returned value to abort
+ * the operation at any time.
+ *
  * @see https://kitops.org/docs/cli/cli-reference/#kit-diff
  */
-export async function diff(reference1: string, reference2: string): Promise<DiffResult> {
-  const result = await runCommand('diff', [reference1, reference2])
-  return parseDiffOutput(result.stdout, reference1, reference2)
+export function diff(reference1: string, reference2: string): CancellablePromise<DiffResult> {
+  return cancellable((signal) => {
+    return runCommand('diff', [reference1, reference2], undefined, { signal }).then((result) =>
+      parseDiffOutput(result.stdout, reference1, reference2),
+    )
+  })
 }
 
 function parseDiffOutput(output: string, ref1: string, ref2: string): DiffResult {

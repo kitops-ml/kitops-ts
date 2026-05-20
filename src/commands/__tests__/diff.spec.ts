@@ -3,7 +3,10 @@ import { beforeEach,describe, expect, it, vi } from 'vitest'
 import { runCommand } from '../../core/exec'
 import { diff } from '../diff'
 
-vi.mock('../../core/exec')
+vi.mock('../../core/exec', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../core/exec')>()
+  return { ...actual, runCommand: vi.fn() }
+})
 
 const mockRunCommand = vi.mocked(runCommand)
 
@@ -20,7 +23,7 @@ describe('diff', () => {
     expect(mockRunCommand).toHaveBeenCalledWith('diff', [
       'registry.example.com/org/model:v1',
       'registry.example.com/org/model:v2',
-    ])
+    ], undefined, { signal: expect.any(AbortSignal) })
   })
 
   it('should return base structure with no differences for empty output', async () => {
