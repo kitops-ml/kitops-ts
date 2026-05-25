@@ -1,7 +1,7 @@
 import { spawn } from 'child_process'
 import { afterEach,beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { cancellable,parseTableOutput, prepareArgs, runCommand } from '../exec'
+import { cancellable, parseKeyValueOutput, parseTableOutput, prepareArgs, runCommand } from '../exec'
 
 vi.mock('child_process')
 
@@ -360,6 +360,62 @@ test-repo      dev      25MB`
         tag_version: 'v1.0',
         file_size: '100MB',
       }])
+    })
+  })
+
+  describe('parseKeyValueOutput', () => {
+    it('should return empty object for empty output', () => {
+      expect(parseKeyValueOutput('')).toEqual({})
+      expect(parseKeyValueOutput('\n\n\n')).toEqual({})
+    })
+
+    it('should parse simple key-value pairs', () => {
+      const output = 'Name: MyKit\nVersion: 1.0.0\nDescription: A sample kit'
+      expect(parseKeyValueOutput(output)).toEqual({
+        Name: 'MyKit',
+        Version: '1.0.0',
+        Description: 'A sample kit',
+      })
+    })
+
+    it('should collapse multi-word keys by removing spaces and capitalizing each subsequent word', () => {
+      const output = 'Kit Name: MyKit\nBuild Version: 1.0.0\nCreated At: 2024-01-01'
+      expect(parseKeyValueOutput(output)).toEqual({
+        KitName: 'MyKit',
+        BuildVersion: '1.0.0',
+        CreatedAt: '2024-01-01',
+      })
+    })
+
+    it('should ignore lines without a colon', () => {
+      const output = 'Name: MyKit\nThis line has no colon\nVersion: 1.0.0'
+      expect(parseKeyValueOutput(output)).toEqual({
+        Name: 'MyKit',
+        Version: '1.0.0',
+      })
+    })
+
+    it('should ignore lines with an empty value', () => {
+      const output = 'Name: MyKit\nEmpty:\nVersion: 1.0.0'
+      expect(parseKeyValueOutput(output)).toEqual({
+        Name: 'MyKit',
+        Version: '1.0.0',
+      })
+    })
+
+    it('should trim whitespace from keys and values', () => {
+      const output = '  Name  :   MyKit   \n  Version  :  1.0.0  '
+      expect(parseKeyValueOutput(output)).toEqual({
+        Name: 'MyKit',
+        Version: '1.0.0',
+      })
+    })
+
+    it('should only use the text before the second colon for values containing colons', () => {
+      const output = 'Image: registry.io/repo'
+      expect(parseKeyValueOutput(output)).toEqual({
+        Image: 'registry.io/repo',
+      })
     })
   })
 })

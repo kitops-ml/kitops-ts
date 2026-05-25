@@ -46,6 +46,7 @@ export type InitFlags = {
   desc?: string,
   author?: string,
   force?: boolean,
+  depth?: number,
 }
 
 export type InitResult = {
