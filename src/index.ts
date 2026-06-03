@@ -41,6 +41,7 @@ export {
   pull,
   push,
   remove,
+  removeAll,
   tag,
   unpack,
   version,
@@ -77,6 +78,7 @@ export type {
 export type {
   ExecResult,
   KitCommand,
+  KitOptions,
   ModelKit,
   CancellablePromise,
 } from './types/kitops.js'

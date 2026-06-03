@@ -3,7 +3,10 @@ import { beforeEach,describe, expect, it, vi } from 'vitest'
 import { runCommand } from '../../core/exec'
 import { tag } from '../tag'
 
-vi.mock('../../core/exec')
+vi.mock('../../core/exec', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../core/exec')>()
+  return { ...actual, runCommand: vi.fn() }
+})
 
 const mockRunCommand = vi.mocked(runCommand)
 
@@ -19,13 +22,13 @@ describe('tag', () => {
     expect(mockRunCommand).toHaveBeenCalledWith('tag', [
       'registry.example.com/org/my-model:rc1',
       'registry.example.com/org/my-model:v1.0.0',
-    ])
+    ], undefined, { signal: expect.any(AbortSignal) })
   })
 
   it('should support local references without a registry', async () => {
     await tag('my-model:dev', 'my-model:stable')
 
-    expect(mockRunCommand).toHaveBeenCalledWith('tag', ['my-model:dev', 'my-model:stable'])
+    expect(mockRunCommand).toHaveBeenCalledWith('tag', ['my-model:dev', 'my-model:stable'], undefined, { signal: expect.any(AbortSignal) })
   })
 
   it('should propagate errors from runCommand', async () => {

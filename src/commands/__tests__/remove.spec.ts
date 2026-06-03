@@ -3,7 +3,10 @@ import { beforeEach,describe, expect, it, vi } from 'vitest'
 import { prepareArgs,runCommand } from '../../core/exec'
 import { remove, removeAll } from '../remove'
 
-vi.mock('../../core/exec')
+vi.mock('../../core/exec', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../core/exec')>()
+  return { ...actual, runCommand: vi.fn(), prepareArgs: vi.fn() }
+})
 
 const mockRunCommand = vi.mocked(runCommand)
 const mockPrepareArgs = vi.mocked(prepareArgs)
@@ -18,7 +21,7 @@ describe('remove', () => {
   it('should call runCommand with the path when no flags are given', async () => {
     await remove('registry.example.com/org/my-model:v1.0.0')
 
-    expect(mockRunCommand).toHaveBeenCalledWith('remove', ['registry.example.com/org/my-model:v1.0.0'])
+    expect(mockRunCommand).toHaveBeenCalledWith('remove', ['registry.example.com/org/my-model:v1.0.0'], undefined, { signal: expect.any(AbortSignal) })
   })
 
   it('should omit the path and add --all when all flag is set', async () => {
@@ -26,7 +29,7 @@ describe('remove', () => {
 
     await remove('registry.example.com/org/my-model:v1.0.0', { all: true })
 
-    expect(mockRunCommand).toHaveBeenCalledWith('remove', ['--all'])
+    expect(mockRunCommand).toHaveBeenCalledWith('remove', ['--all'], undefined, { signal: expect.any(AbortSignal) })
   })
 
   it('should pass additional flags alongside the path', async () => {
@@ -38,7 +41,7 @@ describe('remove', () => {
       'registry.example.com/org/my-model:v1.0.0',
       '--force',
       '--remote',
-    ])
+    ], undefined, { signal: expect.any(AbortSignal) })
   })
 
   it('should propagate errors from runCommand', async () => {
@@ -59,7 +62,7 @@ describe('removeAll', () => {
   it('should call runCommand with --all', async () => {
     await removeAll()
 
-    expect(mockRunCommand).toHaveBeenCalledWith('remove', ['--all'])
+    expect(mockRunCommand).toHaveBeenCalledWith('remove', ['--all'], undefined, { signal: expect.any(AbortSignal) })
   })
 
   it('should pass additional flags after --all', async () => {
@@ -67,7 +70,7 @@ describe('removeAll', () => {
 
     await removeAll({ force: true })
 
-    expect(mockRunCommand).toHaveBeenCalledWith('remove', ['--all', '--force'])
+    expect(mockRunCommand).toHaveBeenCalledWith('remove', ['--all', '--force'], undefined, { signal: expect.any(AbortSignal) })
   })
 
   it('should propagate errors from runCommand', async () => {

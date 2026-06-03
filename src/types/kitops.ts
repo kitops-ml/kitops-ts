@@ -48,6 +48,13 @@ export type KitCommand
   | 'unpack'
   | 'version'
 
+/** Options forwarded to the underlying spawn call by `kit()`. */
+export type KitOptions = {
+  cwd?: string;
+  env?: Record<string, string>;
+  stdio?: 'pipe' | 'inherit' | 'ignore' | ('pipe' | 'inherit' | 'ignore')[];
+}
+
 /** Raw output from a spawned `kit` process. */
 export type ExecResult = {
   stdout: string;

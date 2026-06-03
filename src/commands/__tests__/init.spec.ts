@@ -4,7 +4,10 @@ import { beforeEach,describe, expect, it, vi } from 'vitest'
 import { prepareArgs,runCommand } from '../../core/exec'
 import { init } from '../init'
 
-vi.mock('../../core/exec')
+vi.mock('../../core/exec', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../core/exec')>()
+  return { ...actual, runCommand: vi.fn(), prepareArgs: vi.fn() }
+})
 vi.mock('path')
 
 const mockRunCommand = vi.mocked(runCommand)
@@ -16,12 +19,13 @@ describe('init', () => {
     vi.clearAllMocks()
     mockPrepareArgs.mockReturnValue([])
     mockResolve.mockImplementation((path: string) => `/resolved/${path}`)
+    mockRunCommand.mockResolvedValue({ stdout: '', stderr: '', exitCode: 0 })
   })
 
   it('should work with no arguments', async () => {
     await init()
 
-    expect(mockRunCommand).toHaveBeenCalledWith('init', ['.'])
+    expect(mockRunCommand).toHaveBeenCalledWith('init', ['.'], undefined, { signal: expect.any(AbortSignal) })
   })
 
   it('should call runCommand with default path and prepared args', async () => {
@@ -30,7 +34,7 @@ describe('init', () => {
 
     await init('.', flags)
 
-    expect(mockRunCommand).toHaveBeenCalledWith('init', ['.', '--name', 'test', '--desc', 'description'])
+    expect(mockRunCommand).toHaveBeenCalledWith('init', ['.', '--name', 'test', '--desc', 'description'], undefined, { signal: expect.any(AbortSignal) })
   })
 
   it('should call runCommand with custom path', async () => {
@@ -39,7 +43,7 @@ describe('init', () => {
 
     await init(customPath, flags)
 
-    expect(mockRunCommand).toHaveBeenCalledWith('init', [customPath])
+    expect(mockRunCommand).toHaveBeenCalledWith('init', [customPath], undefined, { signal: expect.any(AbortSignal) })
   })
 
   it('should return resolved paths', async () => {
@@ -63,7 +67,7 @@ describe('init', () => {
     await init('.', flags)
 
     expect(mockPrepareArgs).toHaveBeenCalledWith(flags)
-    expect(mockRunCommand).toHaveBeenCalledWith('init', ['.', '--force'])
+    expect(mockRunCommand).toHaveBeenCalledWith('init', ['.', '--force'], undefined, { signal: expect.any(AbortSignal) })
   })
 
   it('should use default path when not provided', async () => {
@@ -71,6 +75,6 @@ describe('init', () => {
 
     await init(undefined as any, flags)
 
-    expect(mockRunCommand).toHaveBeenCalledWith('init', ['.'])
+    expect(mockRunCommand).toHaveBeenCalledWith('init', ['.'], undefined, { signal: expect.any(AbortSignal) })
   })
 })

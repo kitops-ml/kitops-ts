@@ -3,7 +3,10 @@ import { beforeEach,describe, expect, it, vi } from 'vitest'
 import { runCommand } from '../../core/exec'
 import { logout } from '../logout'
 
-vi.mock('../../core/exec')
+vi.mock('../../core/exec', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../core/exec')>()
+  return { ...actual, runCommand: vi.fn() }
+})
 
 const mockRunCommand = vi.mocked(runCommand)
 
@@ -21,7 +24,7 @@ describe('logout', () => {
 
     await logout('registry.example.com')
 
-    expect(mockRunCommand).toHaveBeenCalledWith('logout', ['registry.example.com'])
+    expect(mockRunCommand).toHaveBeenCalledWith('logout', ['registry.example.com'], undefined, { signal: expect.any(AbortSignal) })
   })
 
   it('should handle successful logout', async () => {
@@ -51,7 +54,7 @@ describe('logout', () => {
 
     await logout('')
 
-    expect(mockRunCommand).toHaveBeenCalledWith('logout', [''])
+    expect(mockRunCommand).toHaveBeenCalledWith('logout', [''], undefined, { signal: expect.any(AbortSignal) })
   })
 
   it('should handle different registry formats', async () => {
@@ -71,7 +74,7 @@ describe('logout', () => {
 
     for (const registry of registries) {
       await logout(registry)
-      expect(mockRunCommand).toHaveBeenCalledWith('logout', [registry])
+      expect(mockRunCommand).toHaveBeenCalledWith('logout', [registry], undefined, { signal: expect.any(AbortSignal) })
     }
 
     expect(mockRunCommand).toHaveBeenCalledTimes(registries.length)
@@ -104,7 +107,7 @@ describe('logout', () => {
 
     await logout(specialRegistry)
 
-    expect(mockRunCommand).toHaveBeenCalledWith('logout', [specialRegistry])
+    expect(mockRunCommand).toHaveBeenCalledWith('logout', [specialRegistry], undefined, { signal: expect.any(AbortSignal) })
   })
 
   it('should handle multiple sequential logouts', async () => {
@@ -119,9 +122,9 @@ describe('logout', () => {
     await logout('registry3.example.com')
 
     expect(mockRunCommand).toHaveBeenCalledTimes(3)
-    expect(mockRunCommand).toHaveBeenNthCalledWith(1, 'logout', ['registry1.example.com'])
-    expect(mockRunCommand).toHaveBeenNthCalledWith(2, 'logout', ['registry2.example.com'])
-    expect(mockRunCommand).toHaveBeenNthCalledWith(3, 'logout', ['registry3.example.com'])
+    expect(mockRunCommand).toHaveBeenNthCalledWith(1, 'logout', ['registry1.example.com'], undefined, { signal: expect.any(AbortSignal) })
+    expect(mockRunCommand).toHaveBeenNthCalledWith(2, 'logout', ['registry2.example.com'], undefined, { signal: expect.any(AbortSignal) })
+    expect(mockRunCommand).toHaveBeenNthCalledWith(3, 'logout', ['registry3.example.com'], undefined, { signal: expect.any(AbortSignal) })
   })
 
   it('should handle logout command execution failure', async () => {

@@ -3,7 +3,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { parseTableOutput,runCommand } from '../../core/exec'
 import { list } from '../list'
 
-vi.mock('../../core/exec')
+vi.mock('../../core/exec', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../core/exec')>()
+  return { ...actual, runCommand: vi.fn(), parseTableOutput: vi.fn() }
+})
 
 const mockRunCommand = vi.mocked(runCommand)
 const mockParseTableOutput = vi.mocked(parseTableOutput)
@@ -19,7 +22,7 @@ describe('list', () => {
 
     await list('test-repo')
 
-    expect(mockRunCommand).toHaveBeenCalledWith('list', ['--format', 'table', 'test-repo'])
+    expect(mockRunCommand).toHaveBeenCalledWith('list', ['--format', 'table', 'test-repo'], undefined, { signal: expect.any(AbortSignal) })
   })
 
   it('should parse table output and return results', async () => {
@@ -50,7 +53,7 @@ describe('list', () => {
 
     await list()
 
-    expect(mockRunCommand).toHaveBeenCalledWith('list', ['--format', 'table'])
+    expect(mockRunCommand).toHaveBeenCalledWith('list', ['--format', 'table'], undefined, { signal: expect.any(AbortSignal) })
   })
 
   it('should propagate errors from runCommand', async () => {
